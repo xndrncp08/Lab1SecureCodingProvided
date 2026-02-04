@@ -26,7 +26,7 @@ public class StudentFactory {
         if (!this.validateGpa(gpa))
             throw new CannotCreateStudentException("Student GPA is invalid.");
 
-        return null;
+        return new ca.sait.crs.models.Student(name, gpa);
     }
 
     /**
@@ -36,6 +36,27 @@ public class StudentFactory {
      */
     private boolean validateName(String name) {
         // TODO: Add logic to test name is valid.
+        if (name == null) {
+            return false;
+        }
+
+        String trimmedName = name.trim();
+        if (trimmedName.isEmpty()) {
+            return false;
+        }
+
+        if (!trimmedName.matches("^[a-zA-Z][a-zA-Z\\s'-]*$")) {
+            return false;
+        }
+
+        if (trimmedName.length() < 2) {
+            return false;
+        }
+
+        if (trimmedName.length() > 100) {
+            return false;
+        }
+
         return true;
     }
 
@@ -46,6 +67,14 @@ public class StudentFactory {
      */
     private boolean validateGpa(double gpa) {
         // TODO: Add logic to test GPA is valid (hint: GPAs cannot be negative or more than 4.0).
+        if (gpa < 0.0 || gpa > 4.0) {
+            return false;
+        }
+
+        if (Double.isNaN(gpa) || Double.isInfinite(gpa)) {
+            return false;
+        }
+
         return true;
     }
 }

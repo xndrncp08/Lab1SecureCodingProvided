@@ -107,27 +107,43 @@ public class CourseRegistrationSystem {
 
         System.out.println();
     }
-
     /**
      * Registers a student with a course.
      */
     private void register() {
         // TODO: Create instance of StudentFactory.
+        StudentFactory studentFactory = new StudentFactory();
 
         System.out.print("Enter course code: ");
         String courseCode = this.scanner.nextLine();
 
         Course course = this.courseService.find(courseCode);
 
+        if (course == null) {
+            System.out.println("Error: Course with code '" + courseCode + "' not found.");
+            System.out.println("Please try again.");
+            return;
+        }
+
         System.out.print("Enter student name: ");
         String studentName = this.scanner.nextLine();
 
         System.out.print("Enter student GPA: ");
-        double studentGpa = this.scanner.nextDouble();
+        double studentGpa = 0.0;
+
+        try {
+            studentGpa = this.scanner.nextDouble();
+            this.scanner.nextLine();
+        } catch (Exception e) {
+            System.out.println("Error: Invalid GPA format. Please enter a numeric value.");
+            System.out.println("Please try again.");
+            this.scanner.nextLine();
+            return;
+        }
 
         try {
             // TODO: Call build() method in StudentFactory instance to handle validating parameters and creating new Student object.
-            Student student = new ca.sait.crs.models.Student(studentName, studentGpa);
+            Student student = studentFactory.build(studentName, studentGpa);
 
             Registration registration = this.registrationService.register(student, course);
 
