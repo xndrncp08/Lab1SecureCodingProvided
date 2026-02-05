@@ -3,19 +3,15 @@ package ca.sait.crs.services;
 import ca.sait.crs.contracts.Course;
 import ca.sait.crs.exceptions.CannotCreateCourseException;
 import ca.sait.crs.factories.CourseFactory;
-import ca.sait.crs.models.OptionalCourse;
-import ca.sait.crs.models.RequiredCourse;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-// TODO: Make this class immutable.
-
 /**
  * Manages courses
- * @author Nick Hamnett <nick.hamnett@sait.ca>
+ * @author Nick Hamnett
  * @since June 1, 2023
  */
 public class CourseService {
@@ -35,7 +31,6 @@ public class CourseService {
      */
     public CourseService() throws FileNotFoundException {
         this.courses = new ArrayList<>();
-
         this.load();
     }
 
@@ -50,7 +45,6 @@ public class CourseService {
                 return course;
             }
         }
-
         return null;
     }
 
@@ -70,12 +64,10 @@ public class CourseService {
         File file = new File(COURSES_CSV);
         Scanner scanner = new Scanner(file);
 
-        // TODO: Create instance of CourseFactory
         CourseFactory factory = new CourseFactory();
 
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
-
             String[] parts = line.split(",");
 
             if (parts.length != 3) {
@@ -84,15 +76,35 @@ public class CourseService {
 
             String code = parts[0];
             String name = parts[1];
-            int credits = Integer.parseInt(parts[2]);
+            int credits;
 
-            // TODO: Call build() method in CourseFactory instance to handle validating parameters and creating new Course object.
-            // TODO: Catch and handle CannotCreateCourseException.
             try {
-            	Course course = factory.build(code, name, credits);
-            	this.courses.add(course);
+                credits = Integer.parseInt(parts[2]);
+            } catch (NumberFormatException ex) {
+                System.out.println("Invalid credits for course " + code + ": " + parts[2]);
+                continue;
+            }
+
+            try {
+                Course course = factory.build(code, name, credits);
+
+                // Prevent duplicates
+                boolean alreadyExists = false;
+                for (Course c : this.courses) {
+                    if (c.getCode().equals(course.getCode())) {
+                        alreadyExists = true;
+                        break;
+                    }
+                }
+
+                if (!alreadyExists) {
+                    this.courses.add(course);
+                } else {
+                    System.out.println("Course " + course.getCode() + " is already registered.");
+                }
+
             } catch (CannotCreateCourseException ex) {
-            	System.out.println(ex.getMessage());
+                System.out.println(ex.getMessage());
             }
         }
 
