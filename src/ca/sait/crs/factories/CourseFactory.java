@@ -2,6 +2,8 @@ package ca.sait.crs.factories;
 
 
 import ca.sait.crs.contracts.Course;
+import ca.sait.crs.models.RequiredCourse;
+import ca.sait.crs.models.OptionalCourse;
 import ca.sait.crs.exceptions.CannotCreateCourseException;
 
 /**
@@ -10,10 +12,9 @@ import ca.sait.crs.exceptions.CannotCreateCourseException;
  * @since June 1, 2023
  */
 public class CourseFactory {
-
     public CourseFactory() {
     }
-
+    
     /**
      * Builds a Course instance
      * @param code Course code
@@ -33,8 +34,12 @@ public class CourseFactory {
         if (!this.validateCredits(credits)) {
             throw new CannotCreateCourseException("Course credits is invalid.");
         }
-
-        return null;
+        
+        if(credits > 0) {
+        	return new RequiredCourse(code, name, credits);
+        } else {
+        	return new OptionalCourse(code, name, credits);
+        }
     }
 
     /**
@@ -44,7 +49,7 @@ public class CourseFactory {
      */
     private boolean validateCode(String code) {
         // TODO: Add logic to test code is valid.
-        return true;
+    	return code != null && code.matches("^[A-Za-z]{4}\\d{3}$");
     }
 
     /**
@@ -54,7 +59,7 @@ public class CourseFactory {
      */
     private boolean validateName(String name) {
         // TODO: Add logic to test name is valid.
-        return true;
+    	return name != null && name.matches("^[A-Za-z0-9 ,.()'-]{3,60}$");
     }
 
     /**
@@ -64,6 +69,6 @@ public class CourseFactory {
      */
     private boolean validateCredits(int credits) {
         // TODO: Add logic to test credits is valid.
-        return true;
+    	return credits >= 0 && credits <= 5;
     }
 }
