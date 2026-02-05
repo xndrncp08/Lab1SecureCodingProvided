@@ -90,6 +90,7 @@ public class CourseService {
             // TODO: Catch and handle CannotCreateCourseException.
             try {
             	Course course = factory.build(code, name, credits);
+            	this.courses.add(course);
             } catch (CannotCreateCourseException ex) {
             	System.out.println(ex.getMessage());
             }

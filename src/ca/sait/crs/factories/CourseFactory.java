@@ -49,7 +49,7 @@ public class CourseFactory {
      */
     private boolean validateCode(String code) {
         // TODO: Add logic to test code is valid.
-    	return code != null && code.matches("^[A-Za-z]{4}\\d{3}$");
+    	return code != null && code.matches("^[A-Za-z]{4}-\\d{3}$");
     }
 
     /**
